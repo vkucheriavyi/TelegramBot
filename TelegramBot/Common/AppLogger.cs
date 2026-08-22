@@ -4,7 +4,7 @@
     {
         public static void Info(string message)
         {
-            Console.WriteLine($"ℹ️  {message}");
+            WriteColored($"{message}", ConsoleColor.Blue);
         }
 
         public static void Success(string message)
