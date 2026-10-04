@@ -45,13 +45,12 @@ namespace TelegramBot.Handlers
                     cancellationToken: ct
                 );
 
-                await bot.SendChatAction(update.CallbackQuery.From.Id, ChatAction.Typing, cancellationToken: ct);
                 await bot.SendMessage(
-                       chatId: update.CallbackQuery.From.Id,
-                        text: $"Development is still in progress..",
-                        parseMode: ParseMode.Markdown,
-                       cancellationToken: ct
-                   );
+                    chatId: update.CallbackQuery.From.Id,
+                    text: $"Development is still in progress..",
+                    parseMode: ParseMode.Markdown,
+                    cancellationToken: ct
+                );
             }
 
             return;

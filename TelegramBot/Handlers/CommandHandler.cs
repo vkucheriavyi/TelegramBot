@@ -1,7 +1,6 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Common;
 
 namespace TelegramBot.Handlers
@@ -19,37 +18,46 @@ namespace TelegramBot.Handlers
             switch (command)
             {
                 case BotConstants.Commands.Start:
-                    await bot.SendMessage(
-                        chatId: message.Chat.Id,
-                        text: "Welcome to the bot! Use /menu to see available options.",
-                        cancellationToken: ct
-                    );
+                    await HandleStartCommand(bot, message, ct);
                     break;
+
                 case BotConstants.Commands.Menu:
-                    var homeButtons = new InlineKeyboardMarkup(new[]
-                    {
-                            new[]
-                            {
-                                InlineKeyboardButton.WithCallbackData(BotConstants.ButtonLabels.System, BotConstants.Callbacks.MenuSystem),
-                                InlineKeyboardButton.WithCallbackData(BotConstants.ButtonLabels.Info, BotConstants.Callbacks.MenuInfo)
-                            }
-                        });
-                    await bot.SendMessage(
-                        chatId: message.Chat.Id,
-                        text: "👋 *Welcome!*\nPlease choose an action:",
-                        replyMarkup: homeButtons,
-                        cancellationToken: ct
-                    );
+                    await HandlerMenuCommand(bot, message, ct);
                     break;
+
                 default:
-                    await bot.SendMessage(
-                        chatId: message.Chat.Id,
-                        text: $"❓ Unknown command `{text}`. Please use /menu to see available commands.",
-                        parseMode: ParseMode.Markdown,
-                        cancellationToken: ct
-                    );
+                    await HandleUnknownCommand(bot, message, ct);
                     break;
             }
+        }
+
+        private static async Task HandleStartCommand(ITelegramBotClient bot, Message message, CancellationToken ct)
+        {
+            await bot.SendMessage(
+                chatId: message.Chat.Id,
+                text: "👋 Welcome to the bot! Use /menu to see available options.",
+                cancellationToken: ct
+            );
+        }
+
+        private static async Task HandlerMenuCommand(ITelegramBotClient bot, Message message, CancellationToken ct)
+        {
+            await bot.SendMessage(
+                chatId: message.Chat.Id,
+                text: "Please choose an action:",
+                replyMarkup: KeyboardFactory.GetMainMenuKeyboard(),
+                cancellationToken: ct
+            );
+        }
+
+        private static async Task HandleUnknownCommand(ITelegramBotClient bot, Message message, CancellationToken ct)
+        {
+            await bot.SendMessage(
+                chatId: message.Chat.Id,
+                text: $"❓ Unknown command. Please use /menu to see available commands.",
+                parseMode: ParseMode.Markdown,
+                cancellationToken: ct
+            );
         }
     }
 }
