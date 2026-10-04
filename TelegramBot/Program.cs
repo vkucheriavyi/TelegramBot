@@ -2,7 +2,9 @@
 using Telegram.Bot.Types.Enums;
 using TelegramBot.Common;
 using TelegramBot.Configuration;
+using TelegramBot.Handlers;
 using TelegramBot.Models.Configuration;
+using TelegramBot.Services;
 
 namespace TelegramBot;
 class Program
@@ -28,12 +30,24 @@ class Program
         }
 
         var bot = new TelegramBotClient(BotConfig.BotToken);
-        string message = $"🚀 *Raspberry Pi started successfully!*\n\n" +
-                             $"🕒 *Start time:* `{DateTime.Now:yyyy-MM-dd HH:mm:ss}`\n" +
-                             $"⚡ Bot is ready to work.";
+        var cancellationToken = new CancellationTokenSource().Token;
 
-        await bot.SendMessage(BotConfig.AdminId, message, parseMode: ParseMode.Markdown);
+        var updateRouter = new UpdateRouter(BotConfig);
+
+        bot.StartReceiving(
+            updateHandler: updateRouter.HandleUpdate,
+                errorHandler: updateRouter.HandleError,
+                cancellationToken: cancellationToken,
+                receiverOptions: new Telegram.Bot.Polling.ReceiverOptions
+                {
+                    AllowedUpdates = new[] { UpdateType.CallbackQuery, UpdateType.Message }, // receive only messages and callback queries
+                    DropPendingUpdates = true // ignore any pending updates that were sent while the bot was offline
+                }
+            );
+
+        await NotificationService.SendStartupNotification(bot, BotConfig.AdminId);
 
         await Task.Delay(-1);
+        await NotificationService.NotifyShutdownAsync(bot, BotConfig.AdminId);
     }
 }
