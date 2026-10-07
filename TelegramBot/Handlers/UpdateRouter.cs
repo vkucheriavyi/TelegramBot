@@ -39,18 +39,7 @@ namespace TelegramBot.Handlers
 
             else if (update.Type == UpdateType.CallbackQuery)
             {
-
-                await bot.AnswerCallbackQuery(
-                    callbackQueryId: update.CallbackQuery!.Id,
-                    cancellationToken: ct
-                );
-
-                await bot.SendMessage(
-                    chatId: update.CallbackQuery.From.Id,
-                    text: $"Development is still in progress..",
-                    parseMode: ParseMode.Markdown,
-                    cancellationToken: ct
-                );
+                await CallbackHandler.HandleCallback(bot, update.CallbackQuery, ct);
             }
 
             return;
