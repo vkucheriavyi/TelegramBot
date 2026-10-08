@@ -3,6 +3,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramBot.Common;
 using TelegramBot.Models.Configuration;
+using TelegramBot.Services;
 
 namespace TelegramBot.Handlers
 {
@@ -28,12 +29,7 @@ namespace TelegramBot.Handlers
                 }
                 else
                 {
-                    await bot.SendMessage(
-                       chatId: message.Chat.Id,
-                        text: $"❓ Unknown command `{text}`. Please, type /menu",
-                        parseMode: ParseMode.Markdown,
-                       cancellationToken: ct
-                   );
+                    await NotificationService.SendMessageAsync(bot, message.Chat.Id, $"❓ Unknown command `{text}`. Please, type /menu", ct, parseMode: ParseMode.Markdown);
                 }
             }
 

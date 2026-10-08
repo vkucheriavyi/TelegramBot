@@ -2,6 +2,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramBot.Common;
+using TelegramBot.Services;
 
 namespace TelegramBot.Handlers
 {
@@ -33,31 +34,17 @@ namespace TelegramBot.Handlers
 
         private static async Task HandleStartCommand(ITelegramBotClient bot, Message message, CancellationToken ct)
         {
-            await bot.SendMessage(
-                chatId: message.Chat.Id,
-                text: "👋 Welcome to the bot! Use /menu to see available options.",
-                cancellationToken: ct
-            );
+            await NotificationService.SendMessageAsync(bot, message.Chat.Id, "👋 Welcome to the bot! Use /menu to see available options.", ct, parseMode: ParseMode.Markdown);
         }
 
         private static async Task HandlerMenuCommand(ITelegramBotClient bot, Message message, CancellationToken ct)
         {
-            await bot.SendMessage(
-                chatId: message.Chat.Id,
-                text: "Please choose an action:",
-                replyMarkup: KeyboardFactory.GetMainMenuKeyboard(),
-                cancellationToken: ct
-            );
+            await NotificationService.SendMessageAsync(bot, message.Chat.Id, "Please choose an action:", ct, replyMarkup: KeyboardFactory.GetMainMenuKeyboard());
         }
 
         private static async Task HandleUnknownCommand(ITelegramBotClient bot, Message message, CancellationToken ct)
         {
-            await bot.SendMessage(
-                chatId: message.Chat.Id,
-                text: $"❓ Unknown command. Please use /menu to see available commands.",
-                parseMode: ParseMode.Markdown,
-                cancellationToken: ct
-            );
+            await NotificationService.SendMessageAsync(bot, message.Chat.Id, "❓ Unknown command. Please use /menu to see available commands.", ct, parseMode: ParseMode.Markdown);
         }
     }
 }

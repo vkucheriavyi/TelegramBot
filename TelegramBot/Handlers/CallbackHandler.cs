@@ -4,6 +4,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramBot.Common;
+using TelegramBot.Services;
 
 namespace TelegramBot.Handlers
 {
@@ -27,11 +28,7 @@ namespace TelegramBot.Handlers
 
         static async Task HandleDefaultCallback(ITelegramBotClient bot, CallbackQuery callbackQuery, CancellationToken ct)
         {
-            await bot.SendMessage(
-                           chatId: callbackQuery.From.Id,
-                           text: "Please, use menu options.",
-                           parseMode: ParseMode.Markdown,
-                           cancellationToken: ct);
+            await NotificationService.SendMessageAsync(bot, callbackQuery.From.Id, "Please, use menu options.", ct);
         }
 
         static async Task HandleMenuSystem(ITelegramBotClient bot, CallbackQuery callbackQuery, CancellationToken ct)
@@ -44,13 +41,7 @@ namespace TelegramBot.Handlers
             sb.AppendLine($"- Uptime: {uptime}");
             sb.AppendLine($"- CPU: {cpuTemp}");
 
-            await bot.SendMessage(
-                chatId: callbackQuery.From.Id,
-                text: sb.ToString(),
-                parseMode: ParseMode.Markdown,
-                cancellationToken: ct
-            );
-
+            await NotificationService.SendMessageAsync(bot, callbackQuery.From.Id, sb.ToString(), ct, parseMode: ParseMode.Markdown);
         }
 
         static string GetCpuTemperature()
@@ -72,6 +63,7 @@ namespace TelegramBot.Handlers
             }
             return "Failed to gain CPU temperature";
         }
+
         static string GetUptime()
         {
             var uptime = TimeSpan.FromMilliseconds(Environment.TickCount64);
